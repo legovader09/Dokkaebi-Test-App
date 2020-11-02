@@ -18,5 +18,10 @@ namespace Dokk.Host
             if (connection.createHostSession())
                 textBox1.Text = connection.sessionCode;
         }
+
+        private void Host_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            connection.endHostSession();
+        }
     }
 }

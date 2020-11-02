@@ -70,6 +70,7 @@
             this.Controls.Add(this.textBox1);
             this.Name = "Host";
             this.Text = "Host";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Host_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

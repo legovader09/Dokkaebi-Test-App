@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace Dokk.Shared
 {
-    public class DBConnection
+    public class DBConnection : IDisposable
     {
         private MySqlConnectionStringBuilder dbbuild = new MySqlConnectionStringBuilder();
         private MySqlConnection dbconn = new MySqlConnection();
@@ -24,6 +24,16 @@ namespace Dokk.Shared
 
             dbconn.ConnectionString = dbbuild.ToString();
             dbconn.Open();
+        }
+
+        public bool endHostSession()
+        {
+            try
+            {
+                Dispose();
+                return true;
+            }
+            catch { return false; }
         }
 
         public bool createHostSession()
@@ -60,6 +70,27 @@ namespace Dokk.Shared
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        bool disposed;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    dbconn.Close();
+                }
+            }
+            //dispose unmanaged resources
+            disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            //GC.SuppressFinalize(this);
         }
     }
 }
