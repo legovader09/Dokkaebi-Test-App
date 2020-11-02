@@ -17,10 +17,7 @@ namespace Dokk.Shared
         public int statusCode = 0;
         public bool isConnected = false;
 
-        public DBConnection()
-        {
-            connectToDB();
-        }
+        public DBConnection() => connectToDB();
 
         private void connectToDB()
         {
