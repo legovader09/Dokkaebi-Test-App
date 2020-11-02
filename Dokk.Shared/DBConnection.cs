@@ -14,16 +14,35 @@ namespace Dokk.Shared
         private MySqlDataReader dbread;
 
         public string sessionCode;
+        public int statusCode = 0;
+        public bool isConnected = false;
 
         public DBConnection()
         {
-            dbbuild.Server = "remotemysql.com";
-            dbbuild.UserID = Encoding.ASCII.GetString(new byte[] { 114, 78, 76, 68, 120, 81, 76, 102, 85, 67 });
-            dbbuild.Password = Encoding.ASCII.GetString(new byte[] { 101, 107, 87, 113, 75, 80, 86, 111, 82, 65 });
-            dbbuild.Database = Encoding.ASCII.GetString(new byte[] { 114, 78, 76, 68, 120, 81, 76, 102, 85, 67 });
+            connectToDB();
+        }
 
-            dbconn.ConnectionString = dbbuild.ToString();
-            dbconn.Open();
+        private void connectToDB()
+        {
+            if (isConnected)
+                return;
+
+            try
+            {
+                dbbuild.Server = "remotemysql.com";
+                dbbuild.UserID = Encoding.ASCII.GetString(new byte[] { 114, 78, 76, 68, 120, 81, 76, 102, 85, 67 });
+                dbbuild.Password = Encoding.ASCII.GetString(new byte[] { 101, 107, 87, 113, 75, 80, 86, 111, 82, 65 });
+                dbbuild.Database = Encoding.ASCII.GetString(new byte[] { 114, 78, 76, 68, 120, 81, 76, 102, 85, 67 });
+
+                dbconn.ConnectionString = dbbuild.ToString();
+                dbconn.Open();
+                isConnected = true;
+            }
+            catch
+            {
+                isConnected = false;
+                connectToDB();
+            }
         }
 
         public bool endHostSession()
@@ -50,7 +69,18 @@ namespace Dokk.Shared
 
                 return true;
             }
-            catch { return false; }
+            catch 
+            {
+                isConnected = false;
+                connectToDB();
+                uploadCode(sessionCode);
+                return false; 
+            }
+            finally
+            {
+                isConnected = false;
+                Dispose();
+            }
         }
 
         private void uploadCode(string code)
@@ -72,7 +102,49 @@ namespace Dokk.Shared
             }
         }
 
-        bool disposed;
+        public void setRingingStatus(int status)
+        {
+            try
+            {
+                dbcomm = dbconn.CreateCommand();
+                dbcomm.CommandText = String.Format($"UPDATE `Dokk` SET StatusCode='{status}' WHERE Code='{sessionCode}'");
+                dbcomm.ExecuteNonQuery();
+                statusCode = status;
+            }
+            catch
+            {
+                connectToDB();
+                setRingingStatus(status);
+            }
+        }
+
+        public int checkStatus()
+        {
+            try
+            {
+                connectToDB();
+
+                query = String.Format("SELECT * FROM Dokk WHERE Code='{0}'", sessionCode);
+                dbcomm = new MySqlCommand(query, dbconn);
+                dbread = dbcomm.ExecuteReader();
+
+                while (dbread.Read())
+                {
+                    statusCode = dbread.GetInt32("StatusCode");
+                }
+
+                dbread.Close();
+
+                return statusCode;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        #region "Disposal"
+        private bool disposed;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -80,7 +152,14 @@ namespace Dokk.Shared
             {
                 if (disposing)
                 {
+                    dbcomm = dbconn.CreateCommand();
+                    dbcomm.CommandText = $"DELETE FROM `Dokk` WHERE `Code`='{sessionCode}'";
+                    var r = dbcomm.ExecuteNonQuery();
+                    if (r != 0)
+                        MessageBox.Show("Successfully Disconnected");
+                    
                     dbconn.Close();
+                    isConnected = false;
                 }
             }
             //dispose unmanaged resources
@@ -92,5 +171,6 @@ namespace Dokk.Shared
             Dispose(true);
             //GC.SuppressFinalize(this);
         }
+        #endregion
     }
 }
