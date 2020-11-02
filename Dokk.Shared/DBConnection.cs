@@ -60,9 +60,10 @@ namespace Dokk.Shared
             try
             {
                 sessionCode = "";
+                Random r = new Random();
                 for (int i = 0; i < 6; i++)
                 {
-                    sessionCode += new Random().Next(i, 9).ToString();
+                    sessionCode += r.Next(10);
                 }
 
                 uploadCode(sessionCode);
@@ -75,11 +76,6 @@ namespace Dokk.Shared
                 connectToDB();
                 uploadCode(sessionCode);
                 return false; 
-            }
-            finally
-            {
-                isConnected = false;
-                Dispose();
             }
         }
 

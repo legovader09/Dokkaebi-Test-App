@@ -82,5 +82,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dokk.Shared\Dokk.Shared.csproj">
+      <Project>{753D6052-5C94-48C3-8081-192E0BCCEABC}</Project>
+      <Name>Dokk.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

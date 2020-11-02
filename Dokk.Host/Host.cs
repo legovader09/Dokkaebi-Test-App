@@ -14,6 +14,7 @@ namespace Dokk.Host
         {
             InitializeComponent();
             loop.Tick += new EventHandler(onTimerLoop);
+            loop.Interval = 3000;
         }
 
         private void onTimerLoop(object sender, EventArgs e)
@@ -25,7 +26,7 @@ namespace Dokk.Host
                     break;
                 case 1:
                     label1.Text = "Status: Ringing";
-                    loop.Stop();
+                    button1.Enabled = true;
                     break;
                 default:
                     break;
@@ -38,17 +39,19 @@ namespace Dokk.Host
             {
                 if (connection.createHostSession())
                     textBox1.Text = connection.sessionCode;
+
                 if (connection.isConnected)
-                {
-                    loop.Interval = 5000;
                     loop.Start();
-                }
+
+                button1.Enabled = false;
                 button1.Text = "Stop Ringing";
             }
             else if (button1.Text == "Stop Ringing")
             {
                 if (connection.statusCode != 1)
                     return;
+
+                button1.Enabled = false;
 
                 connection.setRingingStatus(0);
             }
