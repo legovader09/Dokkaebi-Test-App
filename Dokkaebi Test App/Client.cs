@@ -1,20 +1,13 @@
 ﻿using Dokk.Shared;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Dokkaebi_Test_App
 {
     public partial class Client : Form
     {
-        private DBConnection connection = new DBConnection();
-        private Timer loop = new Timer();
+        private readonly DBConnection connection = new DBConnection();
+        private readonly Timer loop = new Timer();
 
         public Client()
         {

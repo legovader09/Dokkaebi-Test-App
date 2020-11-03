@@ -7,8 +7,8 @@ namespace Dokk.Shared
 {
     public class DBConnection : IDisposable
     {
-        private MySqlConnectionStringBuilder dbbuild = new MySqlConnectionStringBuilder();
-        private MySqlConnection dbconn = new MySqlConnection();
+        private readonly MySqlConnectionStringBuilder dbbuild = new MySqlConnectionStringBuilder();
+        private readonly MySqlConnection dbconn = new MySqlConnection();
         private string query;
         private MySqlCommand dbcomm = new MySqlCommand();
         private MySqlDataReader dbread;

@@ -1,5 +1,4 @@
 ﻿using Dokk.Shared;
-using Microsoft.Win32;
 using System;
 using System.Windows.Forms;
 
@@ -7,8 +6,8 @@ namespace Dokk.Host
 {
     public partial class Host : Form
     {
-        private DBConnection connection = new DBConnection();
-        private Timer loop = new Timer();
+        private readonly DBConnection connection = new DBConnection();
+        private readonly Timer loop = new Timer();
 
         public Host()
         {
@@ -57,9 +56,6 @@ namespace Dokk.Host
             }
         }
 
-        private void Host_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            connection.endHostSession();
-        }
+        private void Host_FormClosing(object sender, FormClosingEventArgs e) => connection.endHostSession();
     }
 }
